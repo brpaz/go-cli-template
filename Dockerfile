@@ -30,11 +30,11 @@ RUN --mount=target=. \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -gcflags "${GC_FLAGS}" \
     -ldflags="-w -s \
-    -X github.com/brpaz/go-cli-template/cmd.Version=${VERSION} \
-    -X github.com/brpaz/go-cli-template/cmd.GitCommit=${REVISION} \
-    -X github.com/brpaz/go-cli-template/cmd.BuildTime=${BUILDTIME} \
-    -extldflags '-static'" \
-    -o /go/bin/go-cli-template main.go
+        -X main.version=${VERSION} \
+        -X main.gitCommit=${REVISION} \
+        -X main.buildDate=${BUILDTIME} \
+        -extldflags '-static'" \
+    -o /go/bin/go-cli-template cmd/main.go
 
 # ===================================
 # production image

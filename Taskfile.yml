@@ -23,10 +23,10 @@ tasks:
       - gofumpt -l -w .
 
   test:
-    desc: Runs application tests
-    summary: Executes all package level tests (unit and integration)
+    desc: Runs tests
+    summary: Executes all package level tests
     cmds:
-      - gotestsum --format="testname" --junitfile {{.REPORTS_DIR}}/unit-tests.xml --jsonfile {{.REPORTS_DIR}}/unit-tests.json -- -coverprofile={{.REPORTS_DIR}}/cover.out -covermode=atomic ./internal/...
+      - gotestsum --format="testname" --junitfile {{.REPORTS_DIR}}/unit-tests.xml --jsonfile {{.REPORTS_DIR}}/unit-tests.json -- -coverprofile={{.REPORTS_DIR}}/cover.out -covermode=atomic ./internal/... ./cmd/...
     deps:
       - ensure-reports-dir
 
@@ -49,9 +49,25 @@ tasks:
         -o {{.BUILD_DIR}}/go-cli-template \
         ./cmd/main.go
     vars:
-      VERSION: $(git describe --tags --always --dirty 2>/dev/null || echo "0.0.1-dev")
+      VERSION: $(git describe --tags --dirty 2>/dev/null || echo "0.0.1-dev")
       GIT_COMMIT: $(git rev-parse HEAD)
       BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    generates:
+      - "{{.BUILD_DIR}}/go-cli-template"
+
+  build-docker:
+    desc: Builds the application docker image
+    cmds:
+      - |
+        docker buildx build --load \
+        --build-arg VERSION={{ .VERSION }} \
+        --build-arg REVISION={{ .REVISION }} \
+        --build-arg BUILDTIME={{ .BUILDTIME }} \
+        -t go-cli-template:dev .
+    vars:
+      VERSION: $(git describe --tags --dirty 2>/dev/null || echo "0.0.1-dev")
+      REVISION: $(git rev-parse HEAD)
+      BUILDTIME: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   snapshot:
     desc: Creates a snapshot release

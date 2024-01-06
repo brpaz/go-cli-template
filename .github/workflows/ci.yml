@@ -17,7 +17,7 @@ env:
   CI: true
 
 jobs:
-  lint-go:
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -34,9 +34,14 @@ jobs:
           version: v${{ env.GOLANGCI_VERSION }}
           only-new-issues: true
 
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
   test:
     name: Unit Tests
-    needs: [lint-go]
+    needs: [lint]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,17 +59,22 @@ jobs:
         with:
           gotestsum_version: ${{ env.GOTESTSUM_VERSION }}
 
+      - name: Setup Go test reporter
+        run: |
+          go install github.com/vakenbolt/go-test-report
+          go-test-report --version
+
       - name: Run tests
         run: |
           gotestsum --junitfile reports/unit-tests.xml --jsonfile reports/unit-tests-results.json -- -race -covermode=atomic -coverprofile=cover.txt ./internal/...
 
-      - name: Generate test report
+      - name: Generate GitHub test report
         uses: dorny/test-reporter@v1
         if: always()
         with:
-            name: Unit Tests Report
-            path: 'reports/*.xml'
-            reporter: jest-junit
+          name: Unit Tests Report
+          path: 'reports/unit-tests.xml'
+          reporter: java-junit
 
       - name: Upload test report artifact
         uses: actions/upload-artifact@v4
@@ -99,6 +109,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           version: ${{ env.GORELEASER_VERSION }}
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

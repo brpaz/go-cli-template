@@ -51,20 +51,29 @@ nfpms:
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
     maintainer: Bruno Paz <oss@brunopaz.dev>
-    description: Sync your GitHub stars with a Notion database
+    description: A template for creating CLI applications in Go.
     license: MIT
     formats:
       - deb
       - rpm
 
 # dockers:
-#   - use: docker
-#     image_templates:
-#       - brpaz/go-cli-template:latest
-#       - brpaz/go-cli-template:{{ .Version }}
+#   - image_templates:
+#     - 'brpaz/go-cli-template:{{ .Tag }}-amd64'
+#     use: buildx
 #     build_flag_templates:
-#       - --build-arg VERSION={{ .Version }}
-#       - --build-arg GIT_COMMIT={{ .Commit }}
-#       - --build-arg BUILD_DATE={{ .Date }}
-changelog:
-  use: github
+#     - "--pull"
+#     - "--platform=linux/amd64"
+#   - image_templates:
+#     - 'brpaz/go-cli-template:{{ .Tag }}-arm64'
+#     use: buildx
+#     build_flag_templates:
+#     - "--pull"
+#     - "--platform=linux/arm64"
+#     goarch: arm64
+
+# docker_manifests:
+#   - name_template: 'brpaz/go-cli-templater:{{ .Tag }}'
+#     image_templates:
+#     - 'brpaz/go-cli-template:{{ .Tag }}-amd64'
+#     - 'brpaz/go-cli-template:{{ .Tag }}-arm64'
