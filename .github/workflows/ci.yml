@@ -61,7 +61,7 @@ jobs:
 
       - name: Setup Go test reporter
         run: |
-          go install github.com/vakenbolt/go-test-report
+          go get github.com/vakenbolt/go-test-report
           go-test-report --version
 
       - name: Run tests
@@ -70,7 +70,7 @@ jobs:
 
       - name: Generate GitHub test report
         uses: dorny/test-reporter@v1
-        if: always()
+        if: success() || failure()
         with:
           name: Unit Tests Report
           path: 'reports/unit-tests.xml'
@@ -78,7 +78,7 @@ jobs:
 
       - name: Upload test report artifact
         uses: actions/upload-artifact@v4
-        if: always()
+        if: success() || failure()
         with:
           name: unit-test-report
           path: reports
