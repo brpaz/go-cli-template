@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests
         run: |
-          gotestsum --junitfile reports/unit-tests.xml --jsonfile reports/unit-tests-results.json -- -race -covermode=atomic -coverprofile=cover.txt ./internal/...
+          gotestsum --junitfile reports/unit-tests.xml --jsonfile reports/unit-tests-results.json -- -race -covermode=atomic -coverprofile=cover.txt ./internal/... ./cmd/...
 
       - name: Generate GitHub test report
         uses: dorny/test-reporter@v1
