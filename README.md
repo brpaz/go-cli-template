@@ -84,6 +84,3 @@ Distributed under the MIT License. See [LICENSE](LICENSE.md) file for details.
 [github-workflow-url]: https://github.com/brpaz/go-cli-template/actions
 [gomod]: https://github.com/brpaz/go-cli-template
 [gomod-url]: https://img.shields.io/github/go-mod/go-version/brpaz/go-cli-template
-
-
-
