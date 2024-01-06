@@ -10,7 +10,6 @@ on:
       - published
 
 env:
-  GO_VERSION: 1.21
   GOTESTSUM_VERSION: 1.11.0
   GORELEASER_VERSION: 1.21.1
   GOLANGCI_VERSION: 1.55
@@ -25,7 +24,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: 'go.mod'
           cache: false # Conflicts with GolangCI, if enabled
 
       - name: Lint Go Code
@@ -52,7 +51,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: 'go.mod'
 
       - name: Setup gotestsum
         uses: autero1/action-gotestsum@v2.0.0
@@ -61,9 +60,8 @@ jobs:
 
       - name: Setup Go test reporter
         run: |
-          go get github.com/vakenbolt/go-test-report
-          echo ${GOBIN}
-          ${GOBIN}/go-test-report --version
+          go install github.com/vakenbolt/go-test-report@latest
+          go-test-report --version
 
       - name: Run tests
         run: |
