@@ -61,7 +61,7 @@ jobs:
       - name: Setup Go test reporter
         run: |
           go install github.com/vakenbolt/go-test-report@latest
-          go-test-report --version
+          go-test-report version
 
       - name: Run tests
         run: |
@@ -75,19 +75,25 @@ jobs:
           path: 'reports/unit-tests.xml'
           reporter: java-junit
 
+      - name: Generate HTML test report
+        if: success() || failure()
+        run: |
+          cat reports/unit-tests.json | go-test-report -o unit-tests.html
+
       - name: Upload test report artifact
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: unit-test-report
-          path: reports
+          path: unit-tests.html
+          retention-days: 7
 
-      # - name: Upload code coverage report to Codecov
-      #   if: always()
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     files: cover.txt
+      - name: Upload code coverage report to Codecov
+        if: success() || failure()
+        uses: codecov/codecov-action@v3
+        with:
+          #token: ${{ secrets.CODECOV_TOKEN }}
+          files: reports/cover.out
 
   release:
     name: Release
