@@ -1,8 +1,5 @@
 [![github-workflow-shield]][github-workflow-url]
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![Go Version][gomod]][gomod-url]
 
@@ -81,19 +78,11 @@ Distributed under the MIT License. See [LICENSE](LICENSE.md) file for details.
 <!-- https://www.markdownguide.org/basic-syntax#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/brpaz/go-cli-template.svg?style=for-the-badge
 [contributors-url]: https://github.com/brpaz/go-cli-template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/brpaz/go-cli-template.svg?style=for-the-badge
-[forks-url]: https://github.com/brpaz/go-cli-template/network/members
-[stars-shield]: https://img.shields.io/github/stars/brpaz/go-cli-template.svg?style=for-the-badge
-[stars-url]: https://github.com/brpaz/go-cli-template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/brpaz/go-cli-template.svg?style=for-the-badge
-[issues-url]: https://github.com/brpaz/go-cli-template/issues
-[license-shield]: https://img.shields.io/github/license/brpaz/go-cli-template.svg?style=for-the-badge
-[license-url]: https://github.com/brpaz/go-cli-template/blob/master/LICENSE.txt
-[Golang]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Golang-url]: https://go.dev
-[github-workflow-shield]: https://img.shields.io/github/actions/workflow/status/brpaz/go-cli-template/CI.yml?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/brpaz/go-cli-template?style=for-the-badge
+[license-url]: https://github.com/brpaz/go-cli-template/LICENSE
+[github-workflow-shield]: https://img.shields.io/github/actions/workflow/status/brpaz/go-cli-template/ci.yml?style=for-the-badge
 [github-workflow-url]: https://github.com/brpaz/go-cli-template/actions
-[gomod]: https://github.com/go-cli-template
+[gomod]: https://github.com/brpaz/go-cli-template
 [gomod-url]: https://img.shields.io/github/go-mod/go-version/brpaz/go-cli-template
 
 
