@@ -121,6 +121,26 @@
         }
       }
     },
+    "hadolint@latest": {
+      "last_modified": "2023-12-13T22:54:10Z",
+      "resolved": "github:NixOS/nixpkgs/fd04bea4cbf76f86f244b9e2549fca066db8ddff#hadolint",
+      "source": "devbox-search",
+      "version": "2.12.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/1pik10xhdbqjylrghc1iqjm90g26frif-hadolint-2.12.0"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/1q06v41mpbzzwa40mqx59bbcqd44yyhz-hadolint-2.12.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/ysfhlqkclacbazwa1p89yf6qm9mwfsdw-hadolint-2.12.0"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/71j32iz5rszdkjn79d4l8s86rg3nyd3p-hadolint-2.12.0"
+        }
+      }
+    },
     "lefthook@1.5.3": {
       "last_modified": "2023-11-24T20:01:39Z",
       "resolved": "github:NixOS/nixpkgs/0bd59c54ef06bc34eca01e37d689f5e46b3fe2f1#lefthook",

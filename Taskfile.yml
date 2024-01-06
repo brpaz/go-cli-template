@@ -3,9 +3,13 @@
 version: "3"
 
 vars:
+  PROJECT_NAME: go-cli-template
+  PACKAGE: github.com/brpaz/{{.PROJECT_NAME}}}
   REPORTS_DIR: reports
   BUILD_DIR: dist
-  PACKAGE: github.com/brpaz/go-cli-template
+  VERSION: $(git describe --tags --dirty 2>/dev/null || echo "0.0.1-dev")
+  REVISION: $(git rev-parse HEAD)
+  BUILDTIME: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 tasks:
   default:
@@ -17,6 +21,11 @@ tasks:
     cmds:
       - golangci-lint run
 
+  lint-docker:
+    desc: Lints dockerfile using hadolint
+    cmds:
+      - hadolint Dockerfile
+
   format:
     desc: Formats all code
     cmds:
@@ -26,7 +35,14 @@ tasks:
     desc: Runs tests
     summary: Executes all package level tests
     cmds:
-      - gotestsum --format="testname" --junitfile {{.REPORTS_DIR}}/unit-tests.xml --jsonfile {{.REPORTS_DIR}}/unit-tests.json -- -coverprofile={{.REPORTS_DIR}}/cover.out -covermode=atomic ./internal/... ./cmd/...
+      - |
+        gotestsum \
+          --format="testname" \
+          --junitfile {{.REPORTS_DIR }}/unit-tests.xml \
+          --jsonfile {{.REPORTS_DIR }}/unit-tests.json \
+          -- -coverprofile={{ .REPORTS_DIR }}/cover.out \
+          -covermode=atomic \
+          ./internal/... ./cmd/...
     deps:
       - ensure-reports-dir
 
@@ -35,25 +51,30 @@ tasks:
     cmds:
       - go tool cover -html=reports/cover.out
 
+  test-report-html:
+    desc: Opens the test report in the browser
+    cmds:
+      - cat {{.REPORTS_DIR}}/unit-tests.json | go-test-report -o {{.REPORTS_DIR}}/test-report.html
+      - xdg-open reports/test-report.html
+
   ensure-reports-dir:
     desc: Ensures that the reports directory exists
     cmds:
-      - mkdir -p {{.REPORTS_DIR}}
+      - mkdir -p {{ .REPORTS_DIR }}
     internal: true
 
   build:
-    desc: Bulds the application locally
+    desc: Builds the application locally
     cmds:
-      - |
-        go build -ldflags "-X main.version={{.VERSION}} -X main.gitCommit={{.GIT_COMMIT}} -X main.buildDate={{.BUILD_DATE}}" \
-        -o {{.BUILD_DIR}}/go-cli-template \
-        ./cmd/main.go
-    vars:
-      VERSION: $(git describe --tags --dirty 2>/dev/null || echo "0.0.1-dev")
-      GIT_COMMIT: $(git rev-parse HEAD)
-      BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      - |-
+        go build -ldflags "\
+          -X main.version={{.VERSION}} \
+          -X main.gitCommit={{.GIT_COMMIT}} \
+          -X main.buildDate={{.BUILD_DATE}}" \
+          -o {{.BUILD_DIR}}/{{.PROJECT_NAME}} \
+          ./cmd/main.go
     generates:
-      - "{{.BUILD_DIR}}/go-cli-template"
+      - "{{.BUILD_DIR}}/{{.PROJECT_NAME}}"
 
   build-docker:
     desc: Builds the application docker image
@@ -63,18 +84,10 @@ tasks:
         --build-arg VERSION={{ .VERSION }} \
         --build-arg REVISION={{ .REVISION }} \
         --build-arg BUILDTIME={{ .BUILDTIME }} \
-        -t go-cli-template:dev .
-    vars:
-      VERSION: $(git describe --tags --dirty 2>/dev/null || echo "0.0.1-dev")
-      REVISION: $(git rev-parse HEAD)
-      BUILDTIME: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        -t {{ .PROJECT_NAME }}:dev .
 
   snapshot:
     desc: Creates a snapshot release
     cmds:
-      - goreleaser --snapshot --skip=validate --skip=publish  --clean
+      - goreleaser --snapshot --skip=validate --skip=publish --clean
 
-  realease:
-    desc: Creates a release
-    cmds:
-      - goreleaser --rm-dist

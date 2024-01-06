@@ -52,10 +52,4 @@ RUN apk add --no-cache curl ca-certificates && \
 COPY --from=builder --chown=app:app /go/bin/go-cli-template /usr/local/bin/go-cli-template
 
 ENTRYPOINT [ "/usr/local/bin/go-cli-template" ]
-
 USER app
-
-LABEL org.opencontainers.image.title "Golang Cli Template"
-LABEL org.opencontainers.image.description "An example of a golang cli application"
-LABEL org.opencontainers.image.authors "Bruno Paz"
-LABEL org.opencontainers.image.url "https://github.com/brpaz/go-cli-template"

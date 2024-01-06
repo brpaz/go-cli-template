@@ -6,7 +6,8 @@
     "goreleaser@1.22.1",
     "lefthook@1.5.3",
     "gotestsum@1.10.1",
-    "gofumpt@latest"
+    "gofumpt@latest",
+    "hadolint@latest"
   ],
   "shell": {
     "init_hook": [
