@@ -15,7 +15,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # A custom PAT is required, to bypass branch protection rules
           persist-credentials: false
           token: ${{ secrets.REPO_PAT }}
 
