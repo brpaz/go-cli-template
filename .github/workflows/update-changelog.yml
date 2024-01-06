@@ -26,7 +26,7 @@ jobs:
       - name: Set release commit message
         id: release_commit_message
         run: |
-            echo "commit_message=chore(release): release: ${VERSION} [skip-ci]" >> "$GITHUB_OUTPUT"
+            echo "commit_message=chore(release): release: ${VERSION} [skip ci]" >> "$GITHUB_OUTPUT"
         env:
           VERSION: ${{ github.event.release.tag_name }}
 
