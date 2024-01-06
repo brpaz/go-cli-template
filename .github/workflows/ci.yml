@@ -99,9 +99,8 @@ jobs:
           #token: ${{ secrets.CODECOV_TOKEN }}
           files: reports/cover.out
 
-  release-snapshot:
-    name: Release - Snapshot
-    if: github.event_name != 'release'
+  publish-binaries:
+    name: Publish Binaries
     needs: [lint, test]
     runs-on: ubuntu-latest
     permissions:
@@ -113,49 +112,37 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Run goreleaser
+      - name: Run goreleaser (snapshot)
         uses: goreleaser/goreleaser-action@v5
+        if: github.event_name != 'release'
         with:
           version: ${{ env.GORELEASER_VERSION }}
           args: release --snapshot --skip-publish --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapshot-artifact
-          path: dist
-          retention-days: 7
-
-  release:
-    name: Release
-    if: github.event_name == 'release'
-    needs: [lint, test]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-
-      - name: Run goreleaser
+      - name: Run goreleaser (release)
         uses: goreleaser/goreleaser-action@v5
+        if: github.event_name == 'release'
         with:
           version: ${{ env.GORELEASER_VERSION }}
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docker-publish:
-    name: Docker Publish
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'release'
+        with:
+          name: snapshot-artifact
+          path: dist/*
+          retention-days: 7
+
+  publish-docker:
+    name: Publish Docker
     needs: [lint, test]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
       packages: write
     env:
       REGISTRY: ghcr.io
