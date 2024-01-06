@@ -67,15 +67,6 @@ jobs:
           go install github.com/vakenbolt/go-test-report@latest
           go-test-report version
 
-      - name: Build Binary
-        run: |
-          go build -ldflags "\
-            -X github.com/vakenbolt/dotsync/internal/version.version=${{ github.ref }} \
-            -X github.com/vakenbolt/dotsync/internal/version.gitCommit=${{ github.sha }} \
-            -X github.com/vakenbolt/dotsync/internal/version.buildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-            -o go-cli-template
-          ./cmd/main.go
-
       - name: Run tests
         run: |
           gotestsum --junitfile reports/unit-tests.xml --jsonfile reports/unit-tests-results.json -- -race -covermode=atomic -coverprofile=cover.txt ./internal/... ./cmd/...
