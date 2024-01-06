@@ -51,3 +51,6 @@ coverage
 !.vscode/tasks.json
 !.vscode/launch.json
 
+# Nix files
+*.drv
+result

@@ -91,3 +91,9 @@ tasks:
     cmds:
       - goreleaser --snapshot --skip=validate --skip=publish --clean
 
+  flake:
+    desc: Builds the application with nix flakes
+    cmds:
+      - nix build .#{{ .PROJECT_NAME }}
+
+
