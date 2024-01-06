@@ -1,0 +1,104 @@
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+  release:
+    types:
+      - published
+
+env:
+  GO_VERSION: 1.21
+  GOTESTSUM_VERSION: 1.11.0
+  GORELEASER_VERSION: 1.21.1
+  GOLANGCI_VERSION: 1.55
+  CI: true
+
+jobs:
+  lint-go:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false # Conflicts with GolangCI, if enabled
+
+      - name: Lint Go Code
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v${{ env.GOLANGCI_VERSION }}
+          only-new-issues: true
+
+  test:
+    name: Unit Tests
+    needs: [lint-go]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      statuses: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Setup gotestsum
+        uses: autero1/action-gotestsum@v2.0.0
+        with:
+          gotestsum_version: ${{ env.GOTESTSUM_VERSION }}
+
+      - name: Run tests
+        run: |
+          gotestsum --junitfile reports/unit-tests.xml --jsonfile reports/unit-tests-results.json -- -race -covermode=atomic -coverprofile=cover.txt ./internal/...
+
+      - name: Generate test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+            name: Unit Tests Report
+            path: 'reports/*.xml'
+            reporter: jest-junit
+
+      - name: Upload test report artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-report
+          path: reports
+
+      # - name: Upload code coverage report to Codecov
+      #   if: always()
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: cover.txt
+
+  release:
+    name: Release
+    if: github.event_name == 'release'
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Run goreleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: ${{ env.GORELEASER_VERSION }}
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

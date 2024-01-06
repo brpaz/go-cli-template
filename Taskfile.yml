@@ -1,0 +1,64 @@
+# Taskfile is used to run common tasks when developing the application.
+# Check : https://taskfile.dev/usage/
+version: "3"
+
+vars:
+  REPORTS_DIR: reports
+  BUILD_DIR: dist
+  PACKAGE: github.com/brpaz/go-cli-template
+
+tasks:
+  default:
+    cmds:
+      - task -l
+
+  lint:
+    desc: Lints Go code using golangci-lint
+    cmds:
+      - golangci-lint run
+
+  format:
+    desc: Formats all code
+    cmds:
+      - gofumpt -l -w .
+
+  test:
+    desc: Runs application tests
+    summary: Executes all package level tests (unit and integration)
+    cmds:
+      - gotestsum --format="testname" --junitfile {{.REPORTS_DIR}}/unit-tests.xml --jsonfile {{.REPORTS_DIR}}/unit-tests.json -- -coverprofile={{.REPORTS_DIR}}/cover.out -covermode=atomic ./internal/...
+    deps:
+      - ensure-reports-dir
+
+  test-cover-report:
+    desc: Opens the test coverage report in the browser
+    cmds:
+      - go tool cover -html=reports/cover.out
+
+  ensure-reports-dir:
+    desc: Ensures that the reports directory exists
+    cmds:
+      - mkdir -p {{.REPORTS_DIR}}
+    internal: true
+
+  build:
+    desc: Bulds the application locally
+    cmds:
+      - |
+        go build -ldflags "-X main.version={{.VERSION}} -X main.gitCommit={{.GIT_COMMIT}} -X main.buildDate={{.BUILD_DATE}}" \
+        -o {{.BUILD_DIR}}/go-cli-template \
+        ./cmd/main.go
+    vars:
+      VERSION: $(git describe --tags --always --dirty 2>/dev/null || echo "0.0.1-dev")
+      GIT_COMMIT: $(git rev-parse HEAD)
+      BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  snapshot:
+    desc: Creates a snapshot release
+    cmds:
+      - goreleaser --snapshot --skip=validate --skip=publish  --clean
+
+  realease:
+    desc: Creates a release
+    cmds:
+      - goreleaser --rm-dist
