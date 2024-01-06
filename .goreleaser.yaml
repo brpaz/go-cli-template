@@ -26,6 +26,7 @@ builds:
     goarch:
       - amd64
       - arm64
+    main: ./cmd/main.go
 
 archives:
   - format: tar.gz
