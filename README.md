@@ -45,6 +45,8 @@ To copy an existing template, run gonew in your new project’s parent directory
 gonew github.com/brpaz/go-cli-template example.com/my-cli
 ```
 
+Then replace all references of `go-cli-template` with your package name.
+
 ## 🤝 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
